@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC One-Way: Viewer</title>
+    <style>
+        body { font-family: sans-serif; max-width: 600px; margin: 20px auto; text-align: center; }
+        video { width: 100%; max-width: 500px; background: #222; border-radius: 8px; }
+        button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+        #status { color: #666; font-style: italic; margin: 10px 0; }
+    </style>
+</head>
+<body>
+
+    <h2>Viewer (Receiver)</h2>
+    <video id="remoteVideo" autoplay playsinline></video>
+    
+    <div id="status">Not connected to live stream.</div>
+    <button id="watchBtn">Watch Live Stream</button>
+
+    <script>
+        const remoteVideo = document.getElementById('remoteVideo');
+        const watchBtn = document.getElementById('watchBtn');
+        const statusDiv = document.getElementById('status');
+
+        const ROOM_ID = "stream_room_1"; // Must match Broadcaster room id string
+        const SIGNALING_URL = "ws://64.227.140.149:8765";
+        
+        let peerConnection = null;
+        let ws = null;
+
+        const rtcConfig = {
+            iceServers: [{ urls: 'stun:stun.l.google.com:19302' }]
+        };
+
+        watchBtn.addEventListener('click', () => {
+            watchBtn.disabled = true;
+            ws = new WebSocket(SIGNALING_URL);
+
+            ws.onopen = () => {
+                statusDiv.innerText = "Connecting to signaling server...";
+                ws.send(jsonStr({ action: "join", room_id: ROOM_ID }));
+            };
+
+            ws.onmessage = async (event) => {
+                const msg = JSON.parse(event.data);
+
+                if (msg.status === "joined") {
+                    statusDiv.innerText = "Connected to room. Waiting for broadcaster's offer...";
+                    setupPeerConnection();
+                }
+
+                // Handle incoming handshake configurations relayed from Broadcaster
+                if (msg.status === "msg_received") {
+                    const payload = msg.payload;
+                    
+                    if (payload.sdp) {
+                        // Received Offer SDP from broadcaster
+                        await peerConnection.setRemoteDescription(new RTCSessionDescription(payload.sdp));
+                        
+                        // Generate Answer SDP and send it back
+                        const answer = await peerConnection.createAnswer();
+                        await peerConnection.setLocalDescription(answer);
+                        ws.send(jsonStr({ action: "relay", payload: { sdp: answer } }));
+                        statusDiv.innerText = "Receiving live feed...";
+                    } else if (payload.ice && peerConnection) {
+                        await peerConnection.addIceCandidate(new RTCIceCandidate(payload.ice));
+                    }
+                }
+
+                if (msg.status === "peer_disconnected") {
+                    statusDiv.innerText = "Broadcaster disconnected. Stream ended.";
+                    remoteVideo.srcObject = null;
+                    watchBtn.disabled = false;
+                }
+            };
+        });
+
+        function setupPeerConnection() {
+            peerConnection = new RTCPeerConnection(rtcConfig);
+
+            // Crucial: Inform browser engine to expect incoming video/audio without local inputs
+            peerConnection.addTransceiver('video', { direction: 'recvonly' });
+            peerConnection.addTransceiver('audio', { direction: 'recvonly' });
+
+            // Gather local network metadata pathways
+            peerConnection.onicecandidate = (event) => {
+                if (event.candidate) {
+                    ws.send(jsonStr({ action: "relay", payload: { ice: event.candidate } }));
+                }
+            };
+
+            // Catch the raw stream tracks as they cross the established P2P connection
+            peerConnection.ontrack = (event) => {
+                if (!remoteVideo.srcObject) {
+                    remoteVideo.srcObject = event.streams[0];
+                }
+            };
+        }
+
+        function jsonStr(obj) { return JSON.stringify(obj); }
+    </script>
+</body>
+</html> 
