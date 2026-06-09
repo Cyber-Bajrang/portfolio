@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact & File Upload - bajrang.xyz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>Send Me a File</h2>
+    
+    <!-- Crucial: enctype="multipart/form-data" allows file uploading -->
+    <form action="https://api.web3forms.com/submit" method="POST" enctype="multipart/form-data">
+        
+        <!-- Put your Web3Forms Access Key here -->
+        <input type="hidden" name="access_key" value="42f1cd02-648d-47ae-bc56-d308971ce1f1">
+        <!-- Subject line for your email notification -->
+        <input type="hidden" name="subject" value="New File Uploaded from bajrang.xyz">
+
+        <!-- Name Input -->
+        <div class="form-group">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" name="name" placeholder="John Doe" required>
+        </div>
+
+        <!-- Email Input -->
+        <div class="form-group">
+            <label for="email">Your Email:</label>
+            <input type="email" id="email" name="email" placeholder="john@example.com" required>
+        </div>
+
+        <!-- File Upload Input -->
+        <div class="form-group">
+            <label for="file">Choose File:</label>
+            <input type="file" id="file" name="attachment" required>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit & Send</button>
+        
+    </form>
+</div>
+
+</body>
+</html>
