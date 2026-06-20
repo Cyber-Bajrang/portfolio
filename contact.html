@@ -41,28 +41,25 @@
             </div>
 
             <div class="contact-form-container">
-                <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
-                <form id="ajax-contact-form">
-                <input type="text" id="name" placeholder="Your Name" required><br><br>
-                <input type="tel" id="phone" placeholder="Your Phone"><br><br>
-    
-               <input type="email" id="email" placeholder="Your Email" required>
-            <button type="button" id="send-otp-btn" onclick="sendOTP()">Send Verification Code</button><br><br>
-     
-    <div id="otp-section" style="display: none; border: 1px dashed #ccc; padding: 10px; margin-bottom: 15px;">
-        <p style="margin: 0 0 5px 0;">Enter the 4-digit code sent to your email:</p>
-        <input type="text" id="otp_input" placeholder="XXXX" maxlength="4">
-        <button type="button" onclick="verifyOTP()">Verify Code</button>
-        <p id="otp-message" style="margin: 5px 0 0 0; font-weight: bold;"></p>
-    </div>
-
-    <textarea id="message" placeholder="Your Message" required></textarea><br><br>
-    
-    <input type="hidden" id="is_verified" value="false">
-
-    <button type="submit" disabled style="opacity: 0.5; cursor: not-allowed;">Send Message</button>
-</form>
+                <form id="ajax-contact-form" class="contact-form">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" placeholder="YOUR_NAME" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" placeholder="hello@example.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone </label>
+                        <input type="tel" id="phone" placeholder="+91 0000000000" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" rows="5" placeholder="print('Hello World!')" required></textarea>
+                    </div>
+                    <button type="submit" class="btn-primary">Send Message</button>
+                </form>
             </div>
         </div>
     </main>
