@@ -20,9 +20,19 @@ document.getElementById('ajax-contact-form').addEventListener('submit', async fu
         _captcha: false // Disables the visual captcha so it sends silently
     };
 
+    //if you are looking at here (kis kisim ke inshan ho yar tum)
+    const cleanPhone = formData.phone.trim();
+    const firstDigit = cleanPhone.charAt(0);
+
+    
+    if (!['6', '7', '8', '9'].includes(firstDigit)) {
+        window.location.href = "heygirl.html";
+        return; // Stop the rest of the function from executing
+    }
+    // ----------------------------
+
     try {
         // 4. Send the data silently to FormSubmit's AJAX endpoint
-        // NOTE: Replace the email below with your actual Gmail address
         const response = await fetch('https://formsubmit.co/ajax/06e6d321ca2566c97353bb5ce05c14b3', {
             method: 'POST',
             headers: {
